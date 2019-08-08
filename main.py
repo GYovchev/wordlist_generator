@@ -1,5 +1,6 @@
 from PageExtractor import PageExtractor, ExtractorConfiguration
 
+import re
 import argparse
 
 parser = argparse.ArgumentParser(
@@ -8,6 +9,8 @@ parser.add_argument('--start_url', metavar='start_url', type=str,
                     help='The url we will start the crawling from.')
 parser.add_argument('--url_prefix', metavar='url_prefix', type=str,
                     help='The prefix we look for in the links.')
+parser.add_argument('--regex', metavar='regex', type=str,
+                    help='The regex you want links to match')
 parser.add_argument('--depth', metavar='depth', type=int,
                     help='The depth of the crawling process.')
 parser.add_argument('--output', metavar='output', default="result.txt", type=bool,
@@ -19,8 +22,11 @@ params = vars(args)
 if not params['start_url']:
     params['start_url'] = input(
         "Enter the url you want to start the crawling from: ")
-if not params['url_prefix']:
-    params['url_prefix'] = input("Enter the prefix we look for in the links: ")
+if not params['url_prefix'] and not params['regex']:
+    if(input("Type 'r' if you want to enter a regex for the links or any other character if you want to enter a url prefix.") == 'r'):
+        params['url_prefix'] = input("Enter the prefix we look for in the links: ")
+    else:
+        params['regex'] = input("Enter regex we look for in the links: ")
 if not params['depth']:
     params['depth'] = int(input("Enter crawling depth: "))
 if not params['output']:
@@ -31,7 +37,10 @@ pg: PageExtractor = PageExtractor(
 
 pg.load_page()
 
-pg.filter_links(lambda x: x.startswith(params['url_prefix']))
+if 'regex' in params:
+    pg.filter_links(lambda x: re.search(params['regex'], x))
+else:
+    pg.filter_links(lambda x: x.startswith(params['url_prefix']))
 
 pg.traverse_all_links()
 
