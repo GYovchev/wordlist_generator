@@ -25,3 +25,8 @@ python3 main.py
 ```
 
 If you use the second command you will be prompted to enter the parameters.
+
+## TODO
+
+- [ ] Cralwing should work in parallel
+- [ ] Currently it extracts words in all languages, solve that
