@@ -13,9 +13,9 @@ parser.add_argument('--regex', metavar='regex', type=str,
                     help='The regex you want links to match')
 parser.add_argument('--depth', metavar='depth', type=int,
                     help='The depth of the crawling process.')
-parser.add_argument('--output', metavar='output', default="result.txt", type=bool,
+parser.add_argument('--output', metavar='output', default="result.txt", type=str,
                     help='Name of output file')
-parser.add_argument('-v', action='store_true', help='Name of output file')
+parser.add_argument('-v', action='store_true', help='Verbose')
 
 args = parser.parse_args()
 params = vars(args)
@@ -37,7 +37,7 @@ pg: PageExtractor = PageExtractor(
 
 pg.load_page()
 
-if 'regex' in params:
+if params['regex'] is not None:
     pg.filter_links(lambda x: re.search(params['regex'], x))
 else:
     pg.filter_links(lambda x: x.startswith(params['url_prefix']))
@@ -45,7 +45,6 @@ else:
 pg.traverse_all_links()
 
 print("Extracted " + str(len(pg.words)) + " words!")
-
 with open(params['output'], 'w') as f:
     for item in pg.get_words():
         f.write("%s\n" % item)
